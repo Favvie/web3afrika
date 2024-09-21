@@ -579,4 +579,4 @@
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ],
+  ]

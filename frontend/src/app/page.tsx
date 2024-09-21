@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation";
 import {ethers} from 'ethers';
 
 import {TOKEN_CONTRACT_ABI} from '@/config/TokenContract';
-import * as dotenv from "dotenv";
-dotenv.config();
+import {CAUSEKOIN_CONTRACT_ABI} from '@/config/CauseKoin';
+// import * as dotenv from "dotenv";
+// dotenv.config();
 
 
 export default function Home() {
@@ -27,7 +28,7 @@ export default function Home() {
         const provider = new ethers.BrowserProvider(ethereum);
         const signer = await provider.getSigner();
         const tokenContract = new ethers.Contract(
-          process.env.contractAddress as string,
+          process.env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS as string,
           TOKEN_CONTRACT_ABI,
           signer
         );
@@ -57,6 +58,7 @@ export default function Home() {
 
         // Redirect to mint page if wallet is connected
         if (accounts.length > 0) {
+          getTokenBalance(walletAddress);
           router.push('/');
         } else {
           console.log('No accounts found.');
@@ -79,8 +81,31 @@ export default function Home() {
   //   // Wallet connection logic goes here
   // };
 
-  const handleContribution = () => {
+  const handleContribution = async () => {
     // Contribution handling logic goes here
+    
+      try {
+        const { ethereum } = window;
+        if (walletAddress) {
+          const provider = new ethers.BrowserProvider(ethereum);
+          const signer = await provider.getSigner();
+          const tokenContract = new ethers.Contract(
+            process.env.NEXT_PUBLIC_CAUSEKOIN_CONTRACT_ADDRESS as string,
+              CAUSEKOIN_CONTRACT_ABI,
+            signer
+          );
+          try {
+            const balance = await tokenContract.claimTokens();
+            console.log('Reward claimed successfully:', balance);
+          } catch (error) {
+            console.error('Error claiming reward:', error);
+          }
+
+        }
+      } catch (error) {
+        console.log(error);
+      }
+  
   };
 
   return (
