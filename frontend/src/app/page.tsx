@@ -21,23 +21,30 @@ export default function Home() {
   // Initialize Web3 instance
   const web3 = window.ethereum ? new Web3(window.ethereum) : null;
 
-   const getTokenBalance = async (account: string) => {
+  const getTokenBalance = async () => {
     try {
       const { ethereum } = window;
-      if (walletAddress) {
+      if (walletAddress && ethereum) {
         const provider = new ethers.BrowserProvider(ethereum);
         const signer = await provider.getSigner();
+      
         const tokenContract = new ethers.Contract(
-          process.env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS as string,
-          TOKEN_CONTRACT_ABI,
+          process.env.NEXT_PUBLIC_CAUSEKOIN_CONTRACT_ADDRESS as string,
+          CAUSEKOIN_CONTRACT_ABI,
           signer
         );
 
-        const balance = await tokenContract.balanceOf(account);
-        setTokenBalance(balance);
+        // Call contractTokenBalance method to get the token balance
+        const balance = await tokenContract.contractTokenBalance({ gasLimit: 300000 });
+        const formattedBalance = ethers.formatUnits(balance, 18); // Assuming 18 decimals for the token
+        console.log('Contract Token balance:', formattedBalance);
+
+        setTokenBalance(parseFloat(formattedBalance));
+      } else {
+        console.log('No wallet address or Ethereum provider found');
       }
     } catch (error) {
-      console.log(error);
+      console.log('Error fetching token balance:', error);
     }
   };
 
@@ -58,8 +65,9 @@ export default function Home() {
 
         // Redirect to mint page if wallet is connected
         if (accounts.length > 0) {
-          getTokenBalance(walletAddress);
+          localStorage.setItem('tokenBalance', tokenBalance.toString());
           router.push('/');
+          
         } else {
           console.log('No accounts found.');
         }
@@ -95,7 +103,7 @@ export default function Home() {
             signer
           );
           try {
-            const balance = await tokenContract.claimTokens();
+            const balance = await tokenContract.claimTokens({ gasLimit: 300000 });
             console.log('Reward claimed successfully:', balance);
           } catch (error) {
             console.error('Error claiming reward:', error);
@@ -145,6 +153,15 @@ export default function Home() {
           >
             I Have Contributed
           </button>
+           <button
+            className="px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition"
+            onClick={() => getTokenBalance()}
+            // disabled={!currentAccount}
+          >
+            {tokenBalance}
+          </button>
+
+          
         </div>
 
         <ol className="list-decimal list-inside text-left text-sm text-gray-700">
