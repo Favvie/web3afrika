@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MyNFT is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
 
-    string public constant TOKEN_URI = "ipfs://QmeGvXvqoXSrrXQM8gmpCde4sSp25Fmx1CK5TEY8fhdJzd";
+    string public constant TOKEN_URI = "ipfs://QmXL1xGxS1W68JCDCKLr5ihQErW3u5sBRAdK9Ns2yktAq8";
     uint256 tokenCounter;
 
     event nftMinted(uint256 indexed tokenId);
