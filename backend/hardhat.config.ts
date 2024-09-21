@@ -1,5 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: "0.8.27",
@@ -7,10 +9,9 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 1337,
     },
-    arbitrumOne: {
-      url: 'https://arb-sepolia.g.alchemy.com/v2/JEZWAZmvNQqfmIVrqNbj7O9xVl51mmmP',
-      chainId: 421614,
-      //accounts: [Sepolia_TESTNET_PRIVATE_KEY]
+    arbitrumSepolia: {
+      url: process.env.ARBITRUM_RPC_URL,
+      accounts: [process.env.ACCOUNT_PRIVATE_KEY!],
     },
   },
 };
